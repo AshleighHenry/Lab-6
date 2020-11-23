@@ -8,7 +8,7 @@ public:
 	Grid();
 	~Grid();
 
-
+	void processEvents(sf::Event& t_event);
 	void update();
 
 	void render(sf::RenderWindow& t_window);

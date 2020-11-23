@@ -12,6 +12,14 @@ Grid::Grid()
 	generateGridMap();
 }
 
+void Grid::processEvents(sf::Event& t_event)
+{
+	if (t_event.key.code == sf::Keyboard::A)
+	{
+		int drgr =1;
+	}
+}
+
 void Grid::update()
 {
 }

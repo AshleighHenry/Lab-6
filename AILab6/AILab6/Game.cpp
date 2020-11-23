@@ -42,13 +42,16 @@ void Game::processEvents()
 		{
 			m_window.close();
 		}
-		
+		if (event.type == sf::Event::KeyReleased)
+		{
+			grid->processEvents(event);
+		}
 	}
 }
 
 void Game::update(sf::Time dt)
 {
-	
+	grid->update();
 }
 
 void Game::render()
