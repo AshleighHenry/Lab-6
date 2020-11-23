@@ -2,21 +2,36 @@
 
 Grid::Grid()
 {
+	if (!m_font.loadFromFile("Assets/Fonts/BebasNeue.otf"))
+	{
+		
+	}
 	numOfRows = 50;
 	numOfCols = numOfRows;
 
 	numOfTiles = numOfRows * numOfCols;
 
-	tileSize = 20;
+	tileSize = 25;
 
 	generateGridMap();
 }
 
-void Grid::processEvents(sf::Event& t_event)
+void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 {
 	if (t_event.key.code == sf::Keyboard::A)
 	{
-		int drgr =1;
+		
+	}
+	if (t_event.type == sf::Event::MouseMoved)
+	{
+		for ( int i = 0; i < m_tiles.size(); i++)
+		{
+			if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(t_event.mouseButton.x, t_event.mouseButton.y)))
+			{
+				cout <<"Mouse click released event at : "<< t_event.mouseButton.x << " , " << t_event.mouseButton.y << endl;
+				m_tiles.at(i)->setTargetTile();
+			}
+		}
 	}
 }
 
@@ -28,7 +43,8 @@ void Grid::render(sf::RenderWindow &t_window)
 {
 	for (int i = 0; i < numOfTiles; i++)
 	{
-		t_window.draw(m_tiles.at(i)->getTileBody());
+		
+		m_tiles.at(i)->render(t_window);
 	}
 }
 
@@ -45,13 +61,17 @@ void Grid::generateGridMap()
 			colCount++;
 		}
 
-		tilePos.x = (rowCount * tileSize)+1;
-		tilePos.y = (colCount * tileSize)+1;
+		tilePos.x = (rowCount * tileSize)+1 + (tileSize/2);
+		tilePos.y = (colCount * tileSize)+1 + (tileSize / 2);
 
 
-		Tile* newTile = new Tile(tileSize, false, tilePos, i); 
+		Tile* newTile = new Tile(tileSize, false, tilePos, i, m_font); 
 		m_tiles.push_back(newTile);
 		rowCount++;
 	}
 
+}
+
+void Grid::setTargets()
+{
 }

@@ -9,7 +9,7 @@
 #include <iostream>
 
 Game::Game() :
-	m_window{ sf::VideoMode{ 20*50,20*50 }, "Grid" }
+	m_window{ sf::VideoMode{ 25*50,25*50 }, "Grid" }
 {
 	grid = new Grid();
 }
@@ -42,9 +42,9 @@ void Game::processEvents()
 		{
 			m_window.close();
 		}
-		if (event.type == sf::Event::KeyReleased)
+		if (event.type == sf::Event::KeyReleased || event.type == sf::Event::MouseMoved)
 		{
-			grid->processEvents(event);
+			grid->processEvents(event, sf::Vector2f(0.0f,0.0f));
 		}
 	}
 }
