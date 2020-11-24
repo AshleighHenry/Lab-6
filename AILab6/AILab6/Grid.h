@@ -16,8 +16,6 @@ public:
 
 	void generateGridMap();
 
-	void setTargets();
-
 	void setNeighbours();
 	void setUpHeatMap();
 

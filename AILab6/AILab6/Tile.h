@@ -9,41 +9,45 @@ public:
 
 
 	int m_ID;
-	void setTraversable(bool t) { m_isWall = t; }
+	
 	sf::RectangleShape getTileBody() { return m_tileBody; }
 
-	bool isTarget() { return m_isTarget; }
+	
 
 	void setCost(int cost);
-	void setColourBasedOnCost();
 	int getCost() { return m_cost; }
-
-	std::vector<int> getNeighourIDs() { return m_neighbourIDs; }
+	void setColourBasedOnCost();
 	
-	void setNeighbourID(int id) { m_neighbourIDs.push_back(id); }
+	int getClosestTile() { return closestTile; }
+	void setClosestTile(int c) { closestTile = c; }
+
+
+	std::vector<int> getNeighourIDs() { return m_neighbourIDs; }	
+	void addNeighbourID(int id) { m_neighbourIDs.push_back(id); }
+	int getID() { return m_ID; }
+
 	sf::Vector2f getPos() { return m_tileBody.getPosition(); }
 
 	void toggleWall();
+	bool isWall() { return m_isWall; }
+
 	bool checkIfTileClicked(sf::Vector2f mousePos);
 	void update();
 
 	void render(sf::RenderWindow& t_window, int drawTextType);
 	void renderLines(sf::RenderWindow& t_window);
-	bool isWall() { return m_isWall; }
-	void setTarget();
+	
+	void toggleTarget();
+	bool isTarget() { return m_isTarget; }
 
-	void setMarked(bool m) {
-		
-		marked = m;
-	};
+	void setMarked(bool m) { marked = m; };
 	bool getMarked() { return marked; }
 
-	int getID() { return m_ID; }
+	
 
 	void setSecondLinePoint(sf::Vector2f pPos) { m_lines[1].position = pPos; }
 
-	int getClosestTile() { return closestTile; }
-	void setClosestTile(int c) { closestTile = c; }
+	
 
 	void toggleStart();
 	bool checkIsStart() { return isStart; }

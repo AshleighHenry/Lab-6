@@ -3,6 +3,7 @@
 // @brief 
 // 
 // @CurrentBugs
+// no checking for if goal is unreachable
 // 
 
 #include "Game.h"
@@ -12,6 +13,10 @@ Game::Game() :
 	m_window{ sf::VideoMode{ 25*50,25*50 }, "Grid" }
 {
 	grid = new Grid();
+
+	std::cout << "User Controls (keyboard only)" << std::endl;
+	std::cout << " A = set new start, S = set new goal, click to toggle if a tile is a wall" << std::endl;
+	std::cout << " 1 = show IDS, 2 = show only vector paths, 3 = show costs"<<  std::endl;
 }
 
 void Game::run()

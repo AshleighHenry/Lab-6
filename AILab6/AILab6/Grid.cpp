@@ -15,48 +15,73 @@ Grid::Grid()
 	target = 1556;
 	start = 200;
 	generateGridMap();
-	setNeighbours();
-
-	setUpHeatMap();
-	setUpVectorPoint();
+	initAllGrid();
 	
 
 }
 
 void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 {
-	if (t_event.key.code == sf::Keyboard::A)
+	if (t_event.type == sf::Event::KeyReleased)
 	{
-		for (int i = 0; i < m_tiles.size(); i++)
+		if (t_event.key.code == sf::Keyboard::A)
 		{
-			if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(mousePos.x, mousePos.y)))
+			for (int i = 0; i < m_tiles.size(); i++)
 			{
-				start = i;
-				m_tiles.at(i)->toggleStart();
-				setUpPathFromStart();
+				if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(mousePos.x, mousePos.y)))
+				{
+					if (!m_tiles.at(i)->isWall())
+					{
+						start = i;
+						m_tiles.at(i)->toggleStart();
+						setUpPathFromStart();
+					}
+					
+				}
 			}
 		}
+		if (t_event.key.code == sf::Keyboard::S)
+		{
+			for (int i = 0; i < m_tiles.size(); i++)
+			{
+				if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(mousePos.x, mousePos.y)))
+				{
+					if (!m_tiles.at(i)->isWall() && !m_tiles.at(i)->getCost() == 0)
+					{
+						m_tiles.at(target)->toggleTarget();
+
+						target = i;
+
+						initAllGrid();
+					}
+				}
+			}
+		}
+		if (t_event.key.code == sf::Keyboard::Num3)
+		{
+			renderTextMode = 0;
+		}
+		if (t_event.key.code == sf::Keyboard::Num1)
+		{
+			renderTextMode = 1;
+		}
+		if (t_event.key.code == sf::Keyboard::Num2)
+		{
+			renderTextMode = 2;
+		}
 	}
-	if (t_event.key.code == sf::Keyboard::Num0)
-	{
-		renderTextMode = 0;
-	}
-	if (t_event.key.code == sf::Keyboard::Num1)
-	{
-		renderTextMode = 1;
-	}
-	if (t_event.key.code == sf::Keyboard::Num2)
-	{
-		renderTextMode = 2;
-	}
+	
 	if (t_event.type == sf::Event::MouseButtonReleased)
 	{
 		for ( int i = 0; i < m_tiles.size(); i++)
 		{
 			if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(t_event.mouseButton.x, t_event.mouseButton.y)))
 			{
-				cout <<"Mouse click released event at : "<< t_event.mouseButton.x << " , " << t_event.mouseButton.y << endl;
+				//cout <<"Mouse click released event at : "<< t_event.mouseButton.x << " , " << t_event.mouseButton.y << endl;
 				m_tiles.at(i)->toggleWall();
+
+				setUpHeatMap();
+				setUpVectorPoint();
 			}
 		}
 	}
@@ -80,6 +105,7 @@ void Grid::render(sf::RenderWindow &t_window)
 	}
 }
 
+// generate 50 *50 grid of tiles within a 1d array
 void Grid::generateGridMap()
 {
 	Vector2f tilePos = Vector2f(0,0);
@@ -101,12 +127,8 @@ void Grid::generateGridMap()
 		m_tiles.push_back(newTile);
 		rowCount++;
 	}
-	m_tiles.at(target)->setTarget();
-	m_tiles.at(start)->toggleStart();
-}
 
-void Grid::setTargets()
-{
+	m_tiles.at(start)->toggleStart();
 }
 
 // this is a very bad way of setting neighbours because if i change the number of tiles in a row or column it will not scale
@@ -137,26 +159,26 @@ void Grid::setNeighbours()
 			// first row
 			if (m_tiles.at(i)->m_ID == 0) // edgecase of 3 pairs
 			{
-				m_tiles.at(i)->setNeighbourID(1);
-				m_tiles.at(i)->setNeighbourID(51);
-				m_tiles.at(i)->setNeighbourID(50);
+				m_tiles.at(i)->addNeighbourID(1);
+				m_tiles.at(i)->addNeighbourID(51);
+				m_tiles.at(i)->addNeighbourID(50);
 
 				
 			}
 			else if (m_tiles.at(i)->m_ID <49 && m_tiles.at(i)->m_ID > 0)
 			{
 				
-				m_tiles.at(i)->setNeighbourID(c + 1);
-				m_tiles.at(i)->setNeighbourID(c + 51);
-				m_tiles.at(i)->setNeighbourID(c + 50);
-				m_tiles.at(i)->setNeighbourID(c + 49);
-				m_tiles.at(i)->setNeighbourID(c - 1);
+				m_tiles.at(i)->addNeighbourID(c + 1);
+				m_tiles.at(i)->addNeighbourID(c + 51);
+				m_tiles.at(i)->addNeighbourID(c + 50);
+				m_tiles.at(i)->addNeighbourID(c + 49);
+				m_tiles.at(i)->addNeighbourID(c - 1);
 			}
 			else if (m_tiles.at(i)->m_ID == 49)
 			{
-				m_tiles.at(i)->setNeighbourID( c+50);
-				m_tiles.at(i)->setNeighbourID(c+49);
-				m_tiles.at(i)->setNeighbourID(c - 1);
+				m_tiles.at(i)->addNeighbourID( c+50);
+				m_tiles.at(i)->addNeighbourID(c+49);
+				m_tiles.at(i)->addNeighbourID(c - 1);
 			}
 		}
 		// second row to last row
@@ -164,31 +186,31 @@ void Grid::setNeighbours()
 		{
 			if (m_tiles.at(i)->m_ID % 50 == 0) // edgecase of 5 pairs. tile is on left side.
 			{
-				m_tiles.at(i)->setNeighbourID(c-50);
-				m_tiles.at(i)->setNeighbourID(c-49);
-				m_tiles.at(i)->setNeighbourID(c+1);
-				m_tiles.at(i)->setNeighbourID(c+51);
-				m_tiles.at(i)->setNeighbourID(c+50);
+				m_tiles.at(i)->addNeighbourID(c-50);
+				m_tiles.at(i)->addNeighbourID(c-49);
+				m_tiles.at(i)->addNeighbourID(c+1);
+				m_tiles.at(i)->addNeighbourID(c+51);
+				m_tiles.at(i)->addNeighbourID(c+50);
 				
 			}
 			else if (rownumcount == 49) // we know tile is on the right side of the grid and only has 5 neighbours
 			{
-				m_tiles.at(i)->setNeighbourID(c - 50);
-				m_tiles.at(i)->setNeighbourID(c + 50);
-				m_tiles.at(i)->setNeighbourID(c + 49);
-				m_tiles.at(i)->setNeighbourID(c - 1);
-				m_tiles.at(i)->setNeighbourID(c - 51);
+				m_tiles.at(i)->addNeighbourID(c - 50);
+				m_tiles.at(i)->addNeighbourID(c + 50);
+				m_tiles.at(i)->addNeighbourID(c + 49);
+				m_tiles.at(i)->addNeighbourID(c - 1);
+				m_tiles.at(i)->addNeighbourID(c - 51);
 			}
 			else // tile has full set of neighbours (8) and can be fully populated
 			{
-				m_tiles.at(i)->setNeighbourID(c - 50);
-				m_tiles.at(i)->setNeighbourID(c - 49);
-				m_tiles.at(i)->setNeighbourID(c + 1);
-				m_tiles.at(i)->setNeighbourID(c + 51);
-				m_tiles.at(i)->setNeighbourID(c + 50);
-				m_tiles.at(i)->setNeighbourID(c + 49);
-				m_tiles.at(i)->setNeighbourID(c - 1);
-				m_tiles.at(i)->setNeighbourID(c - 51);
+				m_tiles.at(i)->addNeighbourID(c - 50);
+				m_tiles.at(i)->addNeighbourID(c - 49);
+				m_tiles.at(i)->addNeighbourID(c + 1);
+				m_tiles.at(i)->addNeighbourID(c + 51);
+				m_tiles.at(i)->addNeighbourID(c + 50);
+				m_tiles.at(i)->addNeighbourID(c + 49);
+				m_tiles.at(i)->addNeighbourID(c - 1);
+				m_tiles.at(i)->addNeighbourID(c - 51);
 			}
 			
 		}
@@ -198,26 +220,26 @@ void Grid::setNeighbours()
 			{
 				if (m_tiles.at(i)->m_ID == 2499) // bottom right corner
 				{
-					m_tiles.at(i)->setNeighbourID(c - 50);
-					m_tiles.at(i)->setNeighbourID(c - 1);
-					m_tiles.at(i)->setNeighbourID(c - 51);
+					m_tiles.at(i)->addNeighbourID(c - 50);
+					m_tiles.at(i)->addNeighbourID(c - 1);
+					m_tiles.at(i)->addNeighbourID(c - 51);
 				}
 				else if (m_tiles.at(i)->m_ID < 2499)
 				{
-					m_tiles.at(i)->setNeighbourID(c - 50);
-					m_tiles.at(i)->setNeighbourID(c - 49);
-					m_tiles.at(i)->setNeighbourID(c + 1);
-					m_tiles.at(i)->setNeighbourID(c - 1);
-					m_tiles.at(i)->setNeighbourID(c - 51);
+					m_tiles.at(i)->addNeighbourID(c - 50);
+					m_tiles.at(i)->addNeighbourID(c - 49);
+					m_tiles.at(i)->addNeighbourID(c + 1);
+					m_tiles.at(i)->addNeighbourID(c - 1);
+					m_tiles.at(i)->addNeighbourID(c - 51);
 				}
 				
 
 			}
 			else if (m_tiles.at(i)->m_ID == 2450) // bottom left corner
 			{
-				m_tiles.at(i)->setNeighbourID(c - 50);
-				m_tiles.at(i)->setNeighbourID(c-49);
-				m_tiles.at(i)->setNeighbourID(c+1);
+				m_tiles.at(i)->addNeighbourID(c - 50);
+				m_tiles.at(i)->addNeighbourID(c-49);
+				m_tiles.at(i)->addNeighbourID(c+1);
 
 			}
 		}
@@ -232,9 +254,22 @@ void Grid::setNeighbours()
 
 }
 
+
+/// <summary>
+/// set up costs of each tile
+/// starts from "start" tile and does a breath first search on each members neighbours untill there are no more unmarked tiles in the grid
+/// </summary>
 void Grid::setUpHeatMap()
 {
-	
+	for (int i = 0; i < numOfTiles; i++)
+	{
+		m_tiles.at(i)->setMarked(false);
+		if (!m_tiles.at(i)->isWall())
+		{
+			m_tiles.at(i)->setCost(0);
+		}
+
+	}
 	std::queue<int> tileQueue;
 	tileQueue.push(m_tiles.at(target)->getID());
 	m_tiles.at(target)->setCost(0);
@@ -250,9 +285,14 @@ void Grid::setUpHeatMap()
 		{
 			if (m_tiles.at(n.at(i))->getMarked()==false)
 			{
-				m_tiles.at(n.at(i))->setMarked(true);
-				m_tiles.at(n.at(i))->setCost(m_tiles.at(tileQueue.front())->getCost() + 1);
-				tileQueue.push(m_tiles.at(n.at(i))->getID());
+				
+				if (!m_tiles.at(n.at(i))->isWall())
+				{
+					m_tiles.at(n.at(i))->setMarked(true);
+					m_tiles.at(n.at(i))->setCost(m_tiles.at(tileQueue.front())->getCost() + 1);
+					tileQueue.push(m_tiles.at(n.at(i))->getID());
+				}
+				
 			}
 		}
 		tileQueue.pop();
@@ -260,6 +300,8 @@ void Grid::setUpHeatMap()
 	
 }
 
+// sets up vector points by getting the position of the neighbour with the lowest cost (if there are multiple with equal costs it takes the last.
+// wshould calculate the distance from the tiles with equal cost to the target to then set the lowest distance as the vector tile
 void Grid::setUpVectorPoint()
 {
 
@@ -267,7 +309,7 @@ void Grid::setUpVectorPoint()
 	{
 		int cost = 9999;
 		std::vector<int> n = m_tiles.at(i)->getNeighourIDs();
-		if (!m_tiles.at(i)->isTarget())
+		if (!m_tiles.at(i)->isTarget() && !m_tiles.at(i)->isWall())
 		{
 			for (int j = 0; j < n.size(); j++)
 			{
@@ -283,7 +325,6 @@ void Grid::setUpVectorPoint()
 		
 	}
 
-
 }
 
 void Grid::setUpPathFromStart()
@@ -298,21 +339,35 @@ void Grid::setUpPathFromStart()
 	pathIDs.clear();
 	int currentID = start;
 	pathIDs.push_back(currentID);
-	while (!m_tiles.at(currentID)->isTarget())
+	if (m_tiles.at(start)->getCost() == 0 && m_tiles.at(start)->isTarget() != true)
 	{
-		currentID = m_tiles.at(currentID)->getClosestTile();
-		m_tiles.at(currentID)->setPathColour();
-		pathIDs.push_back(currentID);
+
 	}
-	for (int i = 0; i < pathIDs.size(); i++)
+	else
 	{
-		std::cout << pathIDs.at(i) << ", " << std::endl;
+		while (!m_tiles.at(currentID)->isTarget())
+		{
+			currentID = m_tiles.at(currentID)->getClosestTile();
+			if (!m_tiles.at(currentID)->isTarget())
+			{
+				m_tiles.at(currentID)->setPathColour();
+			}
+
+			pathIDs.push_back(currentID);
+		}
+		
 	}
+	
 
 }
 
 void Grid::initAllGrid()
 {
-	
+
+	m_tiles.at(target)->toggleTarget();
+
+	setNeighbours();
+	setUpHeatMap();
+	setUpVectorPoint();
 	
 }
