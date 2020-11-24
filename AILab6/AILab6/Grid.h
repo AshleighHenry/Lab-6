@@ -19,6 +19,7 @@ public:
 	void setTargets();
 
 	void setNeighbours();
+	void setUpHeatMap();
 private:
 	int numOfRows;
 	int numOfCols;
@@ -30,6 +31,10 @@ private:
 
 	sf::Font m_font;
 	
+	int target;
+	int start;
 
+
+	int renderTextMode = 0; // 0 for id, 2 for costs, 3 for vector
 };
 

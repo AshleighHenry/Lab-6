@@ -1,7 +1,7 @@
 #include "Tile.h"
 #include <iostream>
 Tile::Tile(float size, bool wall, sf::Vector2f pos, int tileID, sf::Font& font):
-	m_wall(wall),
+	m_isWall(wall),
 	m_position(pos),
 	m_ID(tileID)
 {
@@ -23,9 +23,10 @@ Tile::Tile(float size, bool wall, sf::Vector2f pos, int tileID, sf::Font& font):
 	m_idText.setOutlineColor(sf::Color::White);
 	m_idText.setPosition(m_position);
 	m_idText.setOrigin(m_idText.getGlobalBounds().width / 2,m_idText.getGlobalBounds().height / 2);
+	
 }
 
-void Tile::toggleTargetTile()
+void Tile::toggleWall()
 {
 	if (m_isTarget)
 	{
@@ -63,8 +64,26 @@ void Tile::update()
 
 }
 
-void Tile::render(sf::RenderWindow& t_window)
+void Tile::render(sf::RenderWindow& t_window, int drawTextType)
 {
 	t_window.draw(m_tileBody);
+	
+	if (drawTextType == 0)
+	{
+		m_idText.setString(std::to_string(m_ID));
+	}
+	if (drawTextType == 1)
+	{
+		m_idText.setString(std::to_string(m_cost));
+		
+	}
+
 	t_window.draw(m_idText);
+}
+
+void Tile::setTarget()
+{
+	m_tileBody.setFillColor(sf::Color::Red);
+	m_isTarget = true;
+	m_cost = 0;
 }

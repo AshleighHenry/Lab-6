@@ -12,9 +12,12 @@ Grid::Grid()
 	numOfTiles = numOfRows * numOfCols;
 
 	tileSize = 25;
-
+	target = 1000;
+	start = 200;
 	generateGridMap();
 	setNeighbours();
+
+	setUpHeatMap();
 }
 
 void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
@@ -23,6 +26,14 @@ void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 	{
 		
 	}
+	if (t_event.key.code == sf::Keyboard::Num0)
+	{
+		renderTextMode = 0;
+	}
+	if (t_event.key.code == sf::Keyboard::Num1)
+	{
+		renderTextMode = 1;
+	}
 	if (t_event.type == sf::Event::MouseButtonReleased)
 	{
 		for ( int i = 0; i < m_tiles.size(); i++)
@@ -30,7 +41,7 @@ void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 			if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(t_event.mouseButton.x, t_event.mouseButton.y)))
 			{
 				cout <<"Mouse click released event at : "<< t_event.mouseButton.x << " , " << t_event.mouseButton.y << endl;
-				m_tiles.at(i)->toggleTargetTile();
+				m_tiles.at(i)->toggleWall();
 			}
 		}
 	}
@@ -45,7 +56,7 @@ void Grid::render(sf::RenderWindow &t_window)
 	for (int i = 0; i < numOfTiles; i++)
 	{
 		
-		m_tiles.at(i)->render(t_window);
+		m_tiles.at(i)->render(t_window, renderTextMode);
 	}
 }
 
@@ -191,9 +202,48 @@ void Grid::setNeighbours()
 		rownumcount++;
 		if (rownumcount == 50)
 		{
-			rownumcount = 0; // new row so set count to 0 (should have used a 2d vector. hindsight is 20/20
+			rownumcount = 0; // new row so set count to 0. used for detecting the right edge as it doesn't % nicely like 50's
 		}
 	}
 
 
+}
+
+void Grid::setUpHeatMap()
+{
+	int costStep = 1;
+	std::vector<int> neighboursToCurrent;
+	m_tiles.at(target)->setTarget();
+	neighboursToCurrent = m_tiles.at(target)->getNeighourIDs();
+
+	bool pop = false;
+	//for (int i = 0; i < neighboursToCurrent.size(); i++)
+	//{
+	//	if (!m_tiles.at(neighboursToCurrent.at(i))->isWall())
+	//	{
+	//		if (m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0 && m_tiles.at(neighboursToCurrent.at(i))->isTarget() == false)
+	//		{
+	//			if (m_tiles.at(neighboursToCurrent.at(i))->getCost() > costStep || m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0)
+	//			{
+	//				m_tiles.at(neighboursToCurrent.at(i))->setCost(costStep);
+	//			}
+	//			
+	//		}
+	//	}
+	//	
+	//}
+	//neighboursToCurrent = m_tiles.at(neighboursToCurrent.at(0))->getNeighourIDs();
+	while (!pop)
+	{
+
+
+		for (int n = 0; n < neighboursToCurrent.size(); n++)
+		{
+
+		}
+	}
+
+
+	// get neighbours to start, set their cost to 1.
+	// get first neighbours neighbours, if they have a cost and it is less than the one we are trying to ignore skip it
 }

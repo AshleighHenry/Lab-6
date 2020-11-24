@@ -9,10 +9,11 @@ public:
 
 
 	int m_ID;
-	void setTileType(bool t) { m_wall = t; }
+	void setTraversable(bool t) { m_isWall = t; }
 	sf::RectangleShape getTileBody() { return m_tileBody; }
 
 	bool isTarget() { return m_isTarget; }
+
 	void setCost(int cost) { m_cost = cost; }
 	int getCost() { return m_cost; }
 
@@ -20,11 +21,15 @@ public:
 	void setNeighbourID(int id) { m_neighbourIDs.push_back(id); }
 	sf::Vector2f getPos() { return m_tileBody.getPosition(); }
 
-	void toggleTargetTile();
+	void toggleWall();
 	bool checkIfTileClicked(sf::Vector2f mousePos);
 	void update();
 
-	void render(sf::RenderWindow& t_window);
+	void render(sf::RenderWindow& t_window, int drawTextType);
+
+	bool isWall() { return m_isWall; }
+	void setTarget();
+
 private:
 	int m_weight; 
 	
@@ -35,7 +40,7 @@ private:
 
 
 	bool m_isTarget;
-	bool m_wall ;
+	bool m_isWall ;
 
 
 
