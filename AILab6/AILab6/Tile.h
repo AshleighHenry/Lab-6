@@ -17,10 +17,10 @@ public:
 	int getCost() { return m_cost; }
 
 	std::vector<int> getNeighourIDs() { return m_neighbourIDs; }
-
+	void setNeighbourID(int id) { m_neighbourIDs.push_back(id); }
 	sf::Vector2f getPos() { return m_tileBody.getPosition(); }
 
-	void setTargetTile();
+	void toggleTargetTile();
 	bool checkIfTileClicked(sf::Vector2f mousePos);
 	void update();
 

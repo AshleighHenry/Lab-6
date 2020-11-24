@@ -42,7 +42,7 @@ void Game::processEvents()
 		{
 			m_window.close();
 		}
-		if (event.type == sf::Event::KeyReleased || event.type == sf::Event::MouseMoved)
+		if (event.type == sf::Event::KeyReleased || event.type == sf::Event::MouseButtonReleased)
 		{
 			grid->processEvents(event, sf::Vector2f(0.0f,0.0f));
 		}

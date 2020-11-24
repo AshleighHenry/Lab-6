@@ -25,10 +25,24 @@ Tile::Tile(float size, bool wall, sf::Vector2f pos, int tileID, sf::Font& font):
 	m_idText.setOrigin(m_idText.getGlobalBounds().width / 2,m_idText.getGlobalBounds().height / 2);
 }
 
-void Tile::setTargetTile()
+void Tile::toggleTargetTile()
 {
-	m_isTarget = true;
-	m_tileBody.setFillColor(sf::Color::Blue);
+	if (m_isTarget)
+	{
+		m_isTarget = false;
+		m_tileBody.setFillColor(sf::Color::White);
+	}
+	else
+	{
+		m_isTarget = true;
+		m_tileBody.setFillColor(sf::Color::Blue);
+	}
+	std::cout << "Neighbours : ";
+	for (int i = 0; i < m_neighbourIDs.size(); i++)
+	{
+		std::cout << m_neighbourIDs.at(i) << ", ";
+	}
+	std::cout <<  std::endl;
 }
 
 bool Tile::checkIfTileClicked(sf::Vector2f mousePos)

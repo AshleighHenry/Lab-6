@@ -17,6 +17,8 @@ public:
 	void generateGridMap();
 
 	void setTargets();
+
+	void setNeighbours();
 private:
 	int numOfRows;
 	int numOfCols;
