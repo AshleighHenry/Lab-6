@@ -1,5 +1,5 @@
 #include "Grid.h"
-
+#include <queue>
 Grid::Grid()
 {
 	if (!m_font.loadFromFile("Assets/Fonts/BebasNeue.otf"))
@@ -12,7 +12,7 @@ Grid::Grid()
 	numOfTiles = numOfRows * numOfCols;
 
 	tileSize = 25;
-	target = 1000;
+	target = 1556;
 	start = 200;
 	generateGridMap();
 	setNeighbours();
@@ -81,7 +81,7 @@ void Grid::generateGridMap()
 		m_tiles.push_back(newTile);
 		rowCount++;
 	}
-
+	m_tiles.at(target)->setTarget();
 }
 
 void Grid::setTargets()
@@ -119,6 +119,8 @@ void Grid::setNeighbours()
 				m_tiles.at(i)->setNeighbourID(1);
 				m_tiles.at(i)->setNeighbourID(51);
 				m_tiles.at(i)->setNeighbourID(50);
+
+				
 			}
 			else if (m_tiles.at(i)->m_ID <49 && m_tiles.at(i)->m_ID > 0)
 			{
@@ -131,9 +133,9 @@ void Grid::setNeighbours()
 			}
 			else if (m_tiles.at(i)->m_ID == 49)
 			{
-				m_tiles.at(i)->setNeighbourID(c -1);
 				m_tiles.at(i)->setNeighbourID( c+50);
 				m_tiles.at(i)->setNeighbourID(c+49);
+				m_tiles.at(i)->setNeighbourID(c - 1);
 			}
 		}
 		// second row to last row
@@ -211,39 +213,57 @@ void Grid::setNeighbours()
 
 void Grid::setUpHeatMap()
 {
-	int costStep = 1;
-	std::vector<int> neighboursToCurrent;
-	m_tiles.at(target)->setTarget();
-	neighboursToCurrent = m_tiles.at(target)->getNeighourIDs();
+	//int costStep = 1;
+	//std::vector<int> neighboursToCurrent;
+	//m_tiles.at(target)->setTarget();
+	//neighboursToCurrent = m_tiles.at(target)->getNeighourIDs();
 
-	bool pop = false;
-	//for (int i = 0; i < neighboursToCurrent.size(); i++)
-	//{
-	//	if (!m_tiles.at(neighboursToCurrent.at(i))->isWall())
-	//	{
-	//		if (m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0 && m_tiles.at(neighboursToCurrent.at(i))->isTarget() == false)
-	//		{
-	//			if (m_tiles.at(neighboursToCurrent.at(i))->getCost() > costStep || m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0)
-	//			{
-	//				m_tiles.at(neighboursToCurrent.at(i))->setCost(costStep);
-	//			}
-	//			
-	//		}
-	//	}
-	//	
-	//}
-	//neighboursToCurrent = m_tiles.at(neighboursToCurrent.at(0))->getNeighourIDs();
-	while (!pop)
+	//
+	////for (int i = 0; i < neighboursToCurrent.size(); i++)
+	////{
+	////	if (!m_tiles.at(neighboursToCurrent.at(i))->isWall())
+	////	{
+	////		if (m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0 && m_tiles.at(neighboursToCurrent.at(i))->isTarget() == false)
+	////		{
+	////			if (m_tiles.at(neighboursToCurrent.at(i))->getCost() > costStep || m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0)
+	////			{
+	////				m_tiles.at(neighboursToCurrent.at(i))->setCost(costStep);
+	////			}
+	////			
+	////		}
+	////	}
+	////	
+	////}
+	////neighboursToCurrent = m_tiles.at(neighboursToCurrent.at(0))->getNeighourIDs();
+	//
+
+
+	//// get neighbours to start, set their cost to 1.
+	//// get first neighbours neighbours, if they have a cost and it is less than the one we are trying to ignore skip it
+
+
+
+	std::queue<int> tileQueue;
+	tileQueue.push(m_tiles.at(target)->getID());
+	m_tiles.at(target)->setCost(0);
+	m_tiles.at(target)->setMarked(true);
+	
+	while (tileQueue.size() !=0)
 	{
+	
+		std::vector<int> n = m_tiles.at(tileQueue.front())->getNeighourIDs();
+		
 
-
-		for (int n = 0; n < neighboursToCurrent.size(); n++)
+		for (int i = 0; i < n.size() ; i++)
 		{
-
+			if (m_tiles.at(n.at(i))->getMarked()==false)
+			{
+				m_tiles.at(n.at(i))->setMarked(true);
+				m_tiles.at(n.at(i))->setCost(m_tiles.at(tileQueue.front())->getCost() + 1);
+				tileQueue.push(m_tiles.at(n.at(i))->getID());
+			}
 		}
+		tileQueue.pop();
 	}
-
-
-	// get neighbours to start, set their cost to 1.
-	// get first neighbours neighbours, if they have a cost and it is less than the one we are trying to ignore skip it
+	
 }

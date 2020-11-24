@@ -18,6 +18,7 @@ public:
 	int getCost() { return m_cost; }
 
 	std::vector<int> getNeighourIDs() { return m_neighbourIDs; }
+	
 	void setNeighbourID(int id) { m_neighbourIDs.push_back(id); }
 	sf::Vector2f getPos() { return m_tileBody.getPosition(); }
 
@@ -30,6 +31,13 @@ public:
 	bool isWall() { return m_isWall; }
 	void setTarget();
 
+	void setMarked(bool m) {
+		
+		marked = m;
+	};
+	bool getMarked() { return marked; }
+
+	int getID() { return m_ID; }
 private:
 	int m_weight; 
 	
@@ -47,11 +55,12 @@ private:
 	int m_cost;
 
 	std::vector<int> m_neighbourIDs;
-
+	
 	
 	sf::Text m_idText;
 	sf::Text m_costText;
 
+	bool marked = false;
 
 };
 
