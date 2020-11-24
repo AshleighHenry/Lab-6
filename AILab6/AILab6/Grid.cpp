@@ -18,13 +18,24 @@ Grid::Grid()
 	setNeighbours();
 
 	setUpHeatMap();
+	setUpVectorPoint();
+	
+
 }
 
 void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 {
 	if (t_event.key.code == sf::Keyboard::A)
 	{
-		
+		for (int i = 0; i < m_tiles.size(); i++)
+		{
+			if (m_tiles.at(i)->checkIfTileClicked(sf::Vector2f(mousePos.x, mousePos.y)))
+			{
+				start = i;
+				m_tiles.at(i)->toggleStart();
+				setUpPathFromStart();
+			}
+		}
 	}
 	if (t_event.key.code == sf::Keyboard::Num0)
 	{
@@ -33,6 +44,10 @@ void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 	if (t_event.key.code == sf::Keyboard::Num1)
 	{
 		renderTextMode = 1;
+	}
+	if (t_event.key.code == sf::Keyboard::Num2)
+	{
+		renderTextMode = 2;
 	}
 	if (t_event.type == sf::Event::MouseButtonReleased)
 	{
@@ -49,6 +64,7 @@ void Grid::processEvents(sf::Event& t_event, sf::Vector2f mousePos)
 
 void Grid::update()
 {
+
 }
 
 void Grid::render(sf::RenderWindow &t_window)
@@ -57,6 +73,10 @@ void Grid::render(sf::RenderWindow &t_window)
 	{
 		
 		m_tiles.at(i)->render(t_window, renderTextMode);
+	}
+	for (int i = 0; i < numOfTiles; i++)
+	{
+		m_tiles.at(i)->renderLines(t_window);
 	}
 }
 
@@ -82,6 +102,7 @@ void Grid::generateGridMap()
 		rowCount++;
 	}
 	m_tiles.at(target)->setTarget();
+	m_tiles.at(start)->toggleStart();
 }
 
 void Grid::setTargets()
@@ -213,36 +234,7 @@ void Grid::setNeighbours()
 
 void Grid::setUpHeatMap()
 {
-	//int costStep = 1;
-	//std::vector<int> neighboursToCurrent;
-	//m_tiles.at(target)->setTarget();
-	//neighboursToCurrent = m_tiles.at(target)->getNeighourIDs();
-
-	//
-	////for (int i = 0; i < neighboursToCurrent.size(); i++)
-	////{
-	////	if (!m_tiles.at(neighboursToCurrent.at(i))->isWall())
-	////	{
-	////		if (m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0 && m_tiles.at(neighboursToCurrent.at(i))->isTarget() == false)
-	////		{
-	////			if (m_tiles.at(neighboursToCurrent.at(i))->getCost() > costStep || m_tiles.at(neighboursToCurrent.at(i))->getCost() == 0)
-	////			{
-	////				m_tiles.at(neighboursToCurrent.at(i))->setCost(costStep);
-	////			}
-	////			
-	////		}
-	////	}
-	////	
-	////}
-	////neighboursToCurrent = m_tiles.at(neighboursToCurrent.at(0))->getNeighourIDs();
-	//
-
-
-	//// get neighbours to start, set their cost to 1.
-	//// get first neighbours neighbours, if they have a cost and it is less than the one we are trying to ignore skip it
-
-
-
+	
 	std::queue<int> tileQueue;
 	tileQueue.push(m_tiles.at(target)->getID());
 	m_tiles.at(target)->setCost(0);
@@ -265,5 +257,62 @@ void Grid::setUpHeatMap()
 		}
 		tileQueue.pop();
 	}
+	
+}
+
+void Grid::setUpVectorPoint()
+{
+
+	for (int i = 0; i < numOfTiles; i++)
+	{
+		int cost = 9999;
+		std::vector<int> n = m_tiles.at(i)->getNeighourIDs();
+		if (!m_tiles.at(i)->isTarget())
+		{
+			for (int j = 0; j < n.size(); j++)
+			{
+				if (cost > m_tiles.at(n.at(j))->getCost())
+				{
+					cost = m_tiles.at(n.at(j))->getCost();
+					m_tiles.at(i)->setClosestTile(m_tiles.at(n.at(j))->getID());
+					
+				}
+			}
+			m_tiles.at(i)->setSecondLinePoint(m_tiles.at(m_tiles.at(i)->getClosestTile())->getPos());
+		}
+		
+	}
+
+
+}
+
+void Grid::setUpPathFromStart()
+{
+	if (pathIDs.size() != 0)
+	{
+		for (int i = 0; i < pathIDs.size(); i++)
+		{
+			m_tiles.at(pathIDs.at(i))->setColourBasedOnCost();
+		}
+	}
+	pathIDs.clear();
+	int currentID = start;
+	pathIDs.push_back(currentID);
+	while (!m_tiles.at(currentID)->isTarget())
+	{
+		currentID = m_tiles.at(currentID)->getClosestTile();
+		m_tiles.at(currentID)->setPathColour();
+		pathIDs.push_back(currentID);
+	}
+	for (int i = 0; i < pathIDs.size(); i++)
+	{
+		std::cout << pathIDs.at(i) << ", " << std::endl;
+	}
+
+}
+
+void Grid::initAllGrid()
+{
+	
 	
 }

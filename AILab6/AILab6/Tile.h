@@ -14,7 +14,8 @@ public:
 
 	bool isTarget() { return m_isTarget; }
 
-	void setCost(int cost) { m_cost = cost; }
+	void setCost(int cost);
+	void setColourBasedOnCost();
 	int getCost() { return m_cost; }
 
 	std::vector<int> getNeighourIDs() { return m_neighbourIDs; }
@@ -27,7 +28,7 @@ public:
 	void update();
 
 	void render(sf::RenderWindow& t_window, int drawTextType);
-
+	void renderLines(sf::RenderWindow& t_window);
 	bool isWall() { return m_isWall; }
 	void setTarget();
 
@@ -38,6 +39,16 @@ public:
 	bool getMarked() { return marked; }
 
 	int getID() { return m_ID; }
+
+	void setSecondLinePoint(sf::Vector2f pPos) { m_lines[1].position = pPos; }
+
+	int getClosestTile() { return closestTile; }
+	void setClosestTile(int c) { closestTile = c; }
+
+	void toggleStart();
+	bool checkIsStart() { return isStart; }
+
+	void setPathColour() { m_tileBody.setFillColor(sf::Color::Green); }
 private:
 	int m_weight; 
 	
@@ -50,10 +61,10 @@ private:
 	bool m_isTarget;
 	bool m_isWall ;
 
-
+	bool isStart;
 
 	int m_cost;
-
+	int m_previousCost;
 	std::vector<int> m_neighbourIDs;
 	
 	
@@ -61,6 +72,10 @@ private:
 	sf::Text m_costText;
 
 	bool marked = false;
+
+	int closestTile;
+	// flow lines
+	sf::VertexArray m_lines{ sf::Lines, 2 };
 
 };
 

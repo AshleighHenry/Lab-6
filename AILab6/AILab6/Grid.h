@@ -20,6 +20,12 @@ public:
 
 	void setNeighbours();
 	void setUpHeatMap();
+
+	void setUpVectorPoint();
+
+	void setUpPathFromStart();
+
+	void initAllGrid();
 private:
 	int numOfRows;
 	int numOfCols;
@@ -36,5 +42,6 @@ private:
 
 
 	int renderTextMode = 0; // 0 for id, 2 for costs, 3 for vector
+	std::vector<int> pathIDs;
 };
 

@@ -44,7 +44,7 @@ void Game::processEvents()
 		}
 		if (event.type == sf::Event::KeyReleased || event.type == sf::Event::MouseButtonReleased)
 		{
-			grid->processEvents(event, sf::Vector2f(0.0f,0.0f));
+			grid->processEvents(event, sf::Vector2f(sf::Mouse::getPosition(m_window).x, sf::Mouse::getPosition(m_window).y));
 		}
 	}
 }
