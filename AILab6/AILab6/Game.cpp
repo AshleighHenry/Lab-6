@@ -4,7 +4,7 @@
 // 
 // @CurrentBugs
 // no checking for if goal is unreachable
-// 
+// read the read me c:
 
 #include "Game.h"
 #include <iostream>
@@ -56,7 +56,7 @@ void Game::processEvents()
 
 void Game::update(sf::Time dt)
 {
-	grid->update();
+
 }
 
 void Game::render()
